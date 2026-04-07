@@ -173,12 +173,12 @@ def part2():
 	# --------------- 步骤2 ------------------
 	# 加载数据集2
 	mat = scipy.io.loadmat("dataset_2.mat")
-	X, y = mat['X'], mat['y']
-
+	X, y = mat['X'], mat['y']#X.shape=(863, 2) y.shape=(863, 1)
 	# 绘制数据集2
 	plt.title('数据集2分布')
 	plot(np.c_[X, y])
-	plt.show(block=True)
+	plt.savefig('output/part2_nonlinearSVM/originData.png')
+	plt.close()
 
 	# 训练高斯核函数SVM
 	sigma = 0.01
@@ -187,6 +187,11 @@ def part2():
 
 	# 绘制非线性SVM的决策边界
 	# your code here
+	plt.title('C=1的SVM决策边界')
+	plot(np.c_[X, y])
+	visualize_boundary(X, rbf_svm)
+	plt.savefig('output/part2_nonlinearSVM/nonlinear_C=1_gamma=100.png')
+	plt.close()
 
 # 参数搜索
 def part3():
