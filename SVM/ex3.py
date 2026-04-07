@@ -47,7 +47,7 @@ def gaussian_kernel(x1, x2, sigma):
 def dataset3_params_ver3(X, y, X_val, y_val):
 	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 	sigma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
-	gammas = map(lambda x: 1.0 / x, sigma_values)
+	gammas = map(lambda x: 1.0 / (2 * x**2), sigma_values)
 	
 	raveled_y = y.ravel()
 
@@ -73,7 +73,7 @@ def dataset2_params_ver2(X, y, X_val, y_val):
 		for sigma in sigma_values:
 			# train the SVM first
 			rbf_svm.set_params(C=C)
-			rbf_svm.set_params(gamma=1.0 / sigma)
+			rbf_svm.set_params(gamma=1.0 / (2 * sigma**2))
 			rbf_svm.fit(X, raveled_y)
 
 			score = rbf_svm.score(X_val, y_val)
@@ -84,7 +84,7 @@ def dataset2_params_ver2(X, y, X_val, y_val):
 				best['C'] = C
 				best['sigma'] = sigma
 
-	best['gamma'] = 1.0 / best['sigma']
+	best['gamma'] = 1.0 / (2 * best['sigma']**2)
 	return best
 
 def params_search(X, y, X_val, y_val):
@@ -102,7 +102,7 @@ def params_search(X, y, X_val, y_val):
 		for sigma in sigma_values:
 			# train the SVM first
 			rbf_svm.set_params(C=C)
-			rbf_svm.set_params(gamma=1.0 / sigma)
+			rbf_svm.set_params(gamma=1.0 / (2 * sigma**2))
 			rbf_svm.fit(X, raveled_y)
 
 			# test it out on validation data
@@ -121,7 +121,7 @@ def params_search(X, y, X_val, y_val):
 				best['C'] = C
 				best['sigma'] = sigma
 
-	best['gamma'] = 1.0 / best['sigma']
+	best['gamma'] = 1.0 / (2 * best['sigma']**2)
 	return best
 
 # 线性可分SVM
@@ -182,7 +182,7 @@ def part2():
 
 	# 训练高斯核函数SVM
 	sigma = 0.01
-	rbf_svm = svm.SVC(C=1, kernel='rbf', gamma=1.0 / sigma)  # gamma is actually inverse of sigma
+	rbf_svm = svm.SVC(C=1, kernel='rbf', gamma=1.0 / (2 * sigma**2))  # gamma = 1/(2*sigma^2), matching K=exp(-||x-y||^2 / 2sigma^2)
 	rbf_svm.fit(X, y.ravel())
 
 	# 绘制非线性SVM的决策边界
