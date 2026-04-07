@@ -21,8 +21,8 @@ def plot(data):
 def visualize_boundary(X, trained_svm):
 	kernel = trained_svm.get_params()['kernel']
 	if kernel == 'linear':
-		w = trained_svm.coef_[0]
-		i = trained_svm.intercept_
+		w = trained_svm.coef_[0]#coef_.shape=(classNum,featureNum)=(1,2)  w.shape=(2,)
+		i = trained_svm.intercept_#i.shape=(classNum,)=(1,)
 		xp = np.linspace(min(X[:, 0]), max(X[:, 0]), 100)
 		a = -w[0] / w[1]
 		b = i[0] / w[1]
@@ -59,7 +59,6 @@ def dataset3_params_ver3(X, y, X_val, y_val):
 
 	return best
 
-
 def dataset2_params_ver2(X, y, X_val, y_val):
 	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 	sigma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
@@ -88,7 +87,6 @@ def dataset2_params_ver2(X, y, X_val, y_val):
 
 	best['gamma'] = 1.0 / best['sigma']
 	return best
-
 
 def params_search(X, y, X_val, y_val):
 	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
@@ -163,7 +161,6 @@ def part1():
 	visualize_boundary(X, linear_svm)
 	plt.savefig('output/part1_linearSVM/linear_C=100.png')
 	plt.close()
-
 
 # 非线性可分SVM
 def part2():
