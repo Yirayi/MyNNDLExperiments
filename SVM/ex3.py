@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-
 def plot(data):
 	positives = data[data[:, 2] == 1]
 	negatives = data[data[:, 2] == 0]
@@ -193,12 +192,15 @@ def part3():
 	# --------------- 步骤1 ------------------
 	# 加载数据集3和验证集
 	mat = scipy.io.loadmat("dataset_3.mat")
-	X, y = mat['X'], mat['y']
-	X_val, y_val = mat['Xval'], mat['yval']
-
+	X, y = mat['X'], mat['y']#X.shape=(211, 2) y.shape=(211, 1)
+	X_val, y_val = mat['Xval'], mat['yval']#X.shape=(200, 2) y.shape=(200, 1)
+	print(X.shape)
+	print(y.shape)
+	print(X_val.shape)
+	print(y_val.shape)
 	fig, axes = plt.subplots(
 		1, 2,
-		figsize=(12, 8),  # 整体画布大小
+		figsize=(16, 8),  # 整体画布大小
 		sharex=True,  # 共享x轴
 		sharey=True,  # 共享y轴
 	)
