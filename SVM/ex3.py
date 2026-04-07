@@ -41,18 +41,17 @@ def visualize_boundary(X, trained_svm):
 		
 		plt.contour(X1, X2, vals, colors='blue')
 
-def gaussian_kernel(x1, x2, sigma):
-	return np.exp(-np.sum((x1 - x2) ** 2) / (2 * sigma ** 2))
+def gaussian_kernel(x1, x2, gamma):
+	return np.exp(-gamma * np.sum((x1 - x2) ** 2))
 
 def dataset3_params_ver3(X, y, X_val, y_val):
 	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
-	sigma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
-	gammas = map(lambda x: 1.0 / (2 * x**2), sigma_values)
-	
+	gamma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+
 	raveled_y = y.ravel()
 
 	rbf_svm = svm.SVC()
-	parameters = {'kernel': ('rbf',), 'C': np.c_values, 'gamma': list(gammas)}
+	parameters = {'kernel': ('rbf',), 'C': np.c_values, 'gamma': gamma_values}
 	grid = model_selection.GridSearchCV(rbf_svm, parameters)
 	best = grid.fit(X, raveled_y).best_params_
 
@@ -60,49 +59,46 @@ def dataset3_params_ver3(X, y, X_val, y_val):
 
 def dataset2_params_ver2(X, y, X_val, y_val):
 	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
-	sigma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+	gamma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 
 	raveled_y = y.ravel()  # Else the SVM will give you annoying warning
 	m_val = np.shape(X_val)[0]  # number of entries in validation data
-	
+
 	rbf_svm = svm.SVC(kernel='rbf')
 
-	best = {'score': -999, 'C': 0.0, 'sigma': 0.0}
+	best = {'score': -999, 'C': 0.0, 'gamma': 0.0}
 
 	for C in np.c_values:
-		for sigma in sigma_values:
+		for gamma in gamma_values:
 			# train the SVM first
-			rbf_svm.set_params(C=C)
-			rbf_svm.set_params(gamma=1.0 / (2 * sigma**2))
+			rbf_svm.set_params(C=C, gamma=gamma)
 			rbf_svm.fit(X, raveled_y)
 
 			score = rbf_svm.score(X_val, y_val)
-			
+
 			# get the lowest error
 			if score > best['score']:
 				best['score'] = score
 				best['C'] = C
-				best['sigma'] = sigma
+				best['gamma'] = gamma
 
-	best['gamma'] = 1.0 / (2 * best['sigma']**2)
 	return best
 
 def params_search(X, y, X_val, y_val):
 	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
-	sigma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+	gamma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 
 	raveled_y = y.ravel()
 	m_val = np.shape(X_val)[0]
-	
+
 	rbf_svm = svm.SVC(kernel='rbf')
 
-	best = {'error': 999, 'C': 0.0, 'sigma': 0.0}
+	best = {'error': 999, 'C': 0.0, 'gamma': 0.0}
 
 	for C in np.c_values:
-		for sigma in sigma_values:
+		for gamma in gamma_values:
 			# train the SVM first
-			rbf_svm.set_params(C=C)
-			rbf_svm.set_params(gamma=1.0 / (2 * sigma**2))
+			rbf_svm.set_params(C=C, gamma=gamma)
 			rbf_svm.fit(X, raveled_y)
 
 			# test it out on validation data
@@ -114,14 +110,13 @@ def params_search(X, y, X_val, y_val):
 			# sadly if you don't reshape it, numpy doesn't know if it's row or column vector
 			predictions = np.array(predictions).reshape(m_val, 1)
 			error = (predictions != y_val.reshape(m_val, 1)).mean()
-			
+
 			# get the lowest error
 			if error < best['error']:
 				best['error'] = error
 				best['C'] = C
-				best['sigma'] = sigma
+				best['gamma'] = gamma
 
-	best['gamma'] = 1.0 / (2 * best['sigma']**2)
 	return best
 
 # 线性可分SVM
@@ -167,8 +162,8 @@ def part2():
 	# 计算高斯核函数
 	x1 = np.array([1, 2, 1])
 	x2 = np.array([0, 4, -1])
-	sigma = 2
-	print("样本x1和x2之间的相似度: %f" % gaussian_kernel(x1, x2, sigma))
+	gamma = 0.125  # 对应原 sigma=2: gamma=1/(2*2^2)=0.125
+	print("样本x1和x2之间的相似度: %f" % gaussian_kernel(x1, x2, gamma))
 
 	# --------------- 步骤2 ------------------
 	# 加载数据集2
@@ -181,8 +176,8 @@ def part2():
 	plt.close()
 
 	# 训练高斯核函数SVM
-	sigma = 0.01
-	rbf_svm = svm.SVC(C=1, kernel='rbf', gamma=100)  # gamma = 1/(2*sigma^2), matching K=exp(-||x-y||^2 / 2sigma^2)
+	gamma = 100
+	rbf_svm = svm.SVC(C=1, kernel='rbf', gamma=gamma)
 	rbf_svm.fit(X, y.ravel())
 
 	# 绘制非线性SVM的决策边界
