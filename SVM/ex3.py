@@ -182,12 +182,12 @@ def part2():
 
 	# 训练高斯核函数SVM
 	sigma = 0.01
-	rbf_svm = svm.SVC(C=1, kernel='rbf', gamma=1.0 / (2 * sigma**2))  # gamma = 1/(2*sigma^2), matching K=exp(-||x-y||^2 / 2sigma^2)
+	rbf_svm = svm.SVC(C=1, kernel='rbf', gamma=100)  # gamma = 1/(2*sigma^2), matching K=exp(-||x-y||^2 / 2sigma^2)
 	rbf_svm.fit(X, y.ravel())
 
 	# 绘制非线性SVM的决策边界
 	# your code here
-	plt.title('C=1的SVM决策边界')
+	plt.title('C=1 gamma=100的SVM决策边界')
 	plot(np.c_[X, y])
 	visualize_boundary(X, rbf_svm)
 	plt.savefig('output/part2_nonlinearSVM/nonlinear_C=1_gamma=100.png')
@@ -201,15 +201,25 @@ def part3():
 	X, y = mat['X'], mat['y']
 	X_val, y_val = mat['Xval'], mat['yval']
 
+	fig, axes = plt.subplots(
+		1, 2,
+		figsize=(12, 8),  # 整体画布大小
+		sharex=True,  # 共享x轴
+		sharey=True,  # 共享y轴
+	)
 	# 绘制数据集3
-	plt.title('数据集3分布')
+	plt.sca(axes[0])
+	axes[0].set_title('数据集3分布')
 	plot(np.c_[X, y])
-	plt.show(block=True)
 
 	# 绘制验证集
-	plt.title('验证集分布')
+	plt.sca(axes[1])
+	axes[1].set_title('验证集分布')
 	plot(np.c_[X_val, y_val])
-	plt.show(block=True)
+
+	plt.tight_layout()  # 自动调整子图间距，避免重叠
+	plt.savefig('output/part3_paraSearchSVM/originData.png')
+	plt.close()
 
 	# 训练高斯核函数SVM并搜索使用最优模型参数
 	rbf_svm = svm.SVC(kernel='rbf')
