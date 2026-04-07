@@ -17,7 +17,6 @@ def plot(data):
 	plt.plot(positives[:, 0], positives[:, 1], 'b+')
 	plt.plot(negatives[:, 0], negatives[:, 1], 'yo')
 
-
 # 绘制SVM决策边界
 def visualize_boundary(X, trained_svm):
 	kernel = trained_svm.get_params()['kernel']
@@ -43,6 +42,7 @@ def visualize_boundary(X, trained_svm):
 		plt.contour(X1, X2, vals, colors='blue')
 
 def gaussian_kernel(x1, x2, sigma):
+	pass
 	# your code here
 
 def dataset3_params_ver3(X, y, X_val, y_val):
@@ -132,30 +132,37 @@ def part1():
 	# --------------- 步骤1 ------------------
 	# 加载数据集1
 	mat = scipy.io.loadmat("dataset_1.mat")
-	X, y = mat['X'], mat['y']
+	X, y = mat['X'], mat['y']#X.shape=(51, 2) y.shape=(51, 1)
 
 	# 绘制数据集1
 	plt.title('数据集1分布')
 	plot(np.c_[X, y])
-	plt.show(block=True)
+	plt.savefig('output/part1_linearSVM/originData.png')
+	plt.close()
 
 	# --------------- 步骤2 ------------------
 	# 训练线性SVM（C = 1）
 	linear_svm = svm.SVC(C=1, kernel='linear')
 	linear_svm.fit(X, y.ravel())
-
 	# 绘制C=1的SVM决策边界
 	plt.title('C=1的SVM决策边界')
 	plot(np.c_[X, y])
 	visualize_boundary(X, linear_svm)
-	plt.show(block=True)
+	plt.savefig('output/part1_linearSVM/linear_C=1.png')
+	plt.close()
 
 	# --------------- 步骤3 ------------------
 	# 训练线性SVM（C = 100）
 	# your code here
-
+	linear_svm = svm.SVC(C=100, kernel='linear')
+	linear_svm.fit(X, y.ravel())
 	# 绘制C=100的SVM决策边界
 	# your code here
+	plt.title('C=100的SVM决策边界')
+	plot(np.c_[X, y])
+	visualize_boundary(X, linear_svm)
+	plt.savefig('output/part1_linearSVM/linear_C=100.png')
+	plt.close()
 
 
 # 非线性可分SVM
