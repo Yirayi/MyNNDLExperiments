@@ -42,8 +42,7 @@ def visualize_boundary(X, trained_svm):
 		plt.contour(X1, X2, vals, colors='blue')
 
 def gaussian_kernel(x1, x2, sigma):
-	pass
-	# your code here
+	return np.exp(-np.sum((x1 - x2) ** 2) / (2 * sigma ** 2))
 
 def dataset3_params_ver3(X, y, X_val, y_val):
 	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
