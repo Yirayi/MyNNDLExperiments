@@ -25,7 +25,6 @@ def feature_extraction(word_indices):
 		features[index] = 1
 	return features
 
-
 def email_preprocess(email):
 	with open(email, 'r') as f:
 		email_contents = f.read()
@@ -37,25 +36,25 @@ def email_preprocess(email):
 	email_contents = re.sub('(http|https)://[^\s]*', 'httpaddr', email_contents)
 	email_contents = re.sub('[^\s]+@[^\s]+', 'emailaddr', email_contents)
 	email_contents = re.sub('[$]+', 'dollar', email_contents)
-	stemmer = nltk.stem.porter.PorterStemmer()
-	tokens = re.split('[ ' + re.escape("@$/#.-:&*+=[]?!(){},'\">_<;%\n") + ']', email_contents)
-	
-	for token in tokens:
-		token = re.sub('[^a-zA-Z0-9]', '', token)
-		token = stemmer.stem(token.strip())
+	tokens = re.split('[ ' + re.escape("@$/#.-:&*+=[]?!(){},'\">_<;%\n") + ']+', email_contents)
+	tokens = [t for t in tokens if t]
 
+	stemmer = nltk.stem.porter.PorterStemmer()
+	for token in tokens:
 		if len(token) == 0:
 			continue
+
+		token = re.sub('[^a-zA-Z0-9]', '', token)
+		token = stemmer.stem(token.strip())
 
 		if token in vocab_list:
 			word_indices.append(vocab_list[token])
 			
 	return word_indices, ' '.join(tokens)
-	
-
 
 # 预处理
 def part_1():
+	print("=" *  27+"part1"+"=" * 27)
 	word_indices, processed_contents = email_preprocess('emailSample1.txt')
 	print(word_indices)
 	print(processed_contents)
@@ -63,6 +62,7 @@ def part_1():
 
 # 特征提取
 def part_2():
+	print("=" *  27+"part2"+"=" * 27)
 	word_indices, processed_contents = email_preprocess('emailSample1.txt')
 	features = feature_extraction(word_indices)
 	print(features)
@@ -70,6 +70,7 @@ def part_2():
 
 # SVM模型训练
 def part_3():
+	print("=" * 27 + "part3" + "=" * 27)
 	#加载训练集
 	mat = scipy.io.loadmat("spamTrain.mat")
 	X, y = mat['X'], mat['y']
@@ -98,12 +99,15 @@ def part_3():
 	for i in sorted_indices[0:15]:
 		print(reversed_vocab_list[i])
 
+
 def part_4():
+	print("=" * 27 + "part4" + "=" * 27)
 	# your code here
+	pass
 
-
-part_1()
-part_2()
-part_3()
-part_4()
+if __name__ == '__main__':
+	part_1()
+	part_2()
+	part_3()
+	part_4()
 # print(vocaburary_mapping())
