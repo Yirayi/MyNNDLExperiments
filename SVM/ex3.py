@@ -43,19 +43,16 @@ def visualize_boundary(X, trained_svm):
 def gaussian_kernel(x1, x2, gamma):
 	return np.exp(-gamma * np.sum((x1 - x2) ** 2))
 
-def dataset3_params_ver3(X, y, X_val, y_val) -> dict:
+def dataset3_params_ver3(X_all, y_all) -> tuple[dict, svm.SVC]:
 	c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 	gamma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
-
-	X_all = np.vstack([X, X_val])
-	y_all = np.concatenate([y.ravel(), y_val.ravel()])
 
 	rbf_svm = svm.SVC()
 	parameters = {'kernel': ('rbf',), 'C': c_values, 'gamma': gamma_values}
 	grid = model_selection.GridSearchCV(rbf_svm, parameters)
-	best = grid.fit(X_all, y_all).best_params_
+	grid.fit(X_all, y_all)
 
-	return best
+	return grid.best_params_,grid.best_estimator_
 
 def dataset2_params_ver2(X, y, X_val, y_val):
 	c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
@@ -212,22 +209,51 @@ def part3():
 	plot(np.c_[X_val, y_val])
 
 	plt.tight_layout()  # 自动调整子图间距，避免重叠
+	plt.savefig('output/part3_paraSearchSVM/originDataSeparate.png')
+	plt.close()
+
+	X_all = np.concatenate([X, X_val])
+	y_all = np.concatenate([y, y_val])
+
+	# 一起绘制
+	plt.title('数据集3+验证集')
+	plot(np.c_[X_all, y_all])
 	plt.savefig('output/part3_paraSearchSVM/originData.png')
 	plt.close()
 
+	# --------------- 步骤1 ------------------
 	# 训练高斯核函数SVM并搜索使用最优模型参数
 	#rbf_svm = svm.SVC(kernel='rbf')
 	# your code here
-	best = dataset3_params_ver3(X, y, X_val, y_val)
-	rbf_svm = svm.SVC(**best)
+
+	#1.网格参数搜索最优模型-仅数据集3
+	best_para, best_rbf_svm = dataset3_params_ver3(X, y.ravel())
 
 	# 绘制决策边界
-	plt.title('参数搜索后的决策边界')
+	plt.title('参数搜索dataset3_' + ','.join(f"{k}={v}" for k, v in best_para.items()))
 	plot(np.c_[X, y])
-	visualize_boundary(X, rbf_svm)
-	plt.show(block=True)
-	
-	# best = dataset2_params_ver2(X, y, X_val, y_val)
+	visualize_boundary(X, best_rbf_svm)
+	plt.savefig('output/part3_paraSearchSVM/bestForDataste3_'
+				+ '_'.join(f"{k}={v}" for k, v in best_para.items())
+				+ '.png')
+	plt.close()
+
+	#2.网格参数搜索最优模型-全部数据
+	best_para,best_rbf_svm = dataset3_params_ver3(X_all, y_all.ravel())
+
+	# 绘制决策边界
+	plt.title('参数搜索all_'+','.join(f"{k}={v}" for k, v in best_para.items()))
+	plot(np.c_[X_all, y_all])
+	visualize_boundary(X_all, best_rbf_svm)
+	plt.savefig('output/part3_paraSearchSVM/bestForAll_'
+				+'_'.join(f"{k}={v}" for k, v in best_para.items())
+				+'.png')
+	plt.close()
+
+
+
+
+# best = dataset2_params_ver2(X, y, X_val, y_val)
 	# rbf_svm.set_params(C=best['C'])
 	# rbf_svm.set_params(gamma=best['gamma'])
 
