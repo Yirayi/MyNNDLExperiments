@@ -9,8 +9,13 @@ import nltk, nltk.stem.porter
 import scipy.misc, scipy.io, scipy.optimize
 from sklearn import svm
 
+isTrainMode = False
+def vocaburary_mapping()->dict[str,int]:
+	'''
 
-def vocaburary_mapping():
+	Returns:
+		dict[str,int]:单词对应编号
+	'''
 	vocab_list = {}
 	with open('vocab.txt', 'r') as file:
 		reader = csv.reader(file, delimiter='\t')
@@ -59,14 +64,11 @@ def part_1():
 	print(word_indices)
 	print(processed_contents)
 
-
 # 特征提取
 def part_2():
 	print("=" *  27+"part2"+"=" * 27)
 	word_indices, processed_contents = email_preprocess('emailSample1.txt')
-	features = feature_extraction(word_indices)
-	print(features)
-
+	features = feature_extraction(word_indices)#features.shape = (1899,1)
 
 # SVM模型训练
 def part_3():
@@ -77,21 +79,29 @@ def part_3():
 
 	# linear_svm = pickle.load(open("linear_svm.svm", "rb")) # 模型加载
 	#训练SVM
-	linear_svm = svm.SVC(C=0.1, kernel='linear')
-	linear_svm.fit(X, y.ravel())
-	# pickle.dump(linear_svm, open("linear_svm.svm", "wb")) # 模型保存
+	if isTrainMode:
+		linear_svm = svm.SVC(C=0.1, kernel='linear')
+		linear_svm.fit(X, y.ravel())
+		pickle.dump(linear_svm, open("linear_svm.svm", "wb")) # 模型保存
+	else:
+		with open("linear_svm.svm", "rb") as f:
+			linear_svm = pickle.load(f)
+
+	#--------------正确率---------------------
 	# 预测并计算训练集正确率
-	predictions = linear_svm.predict(X)
-	predictions = predictions.reshape(np.shape(predictions)[0], 1)
-	print('{}%'.format((predictions == y).mean() * 100.0))
+	predictions = linear_svm.predict(X)#X.shape=(4000, 1899) predictions.shape=(4000,)
+	predictions = predictions.reshape(-1, 1)#predictions.shape=(4000,1)
+	print("C=0.1的线性核SVM训练后对于训练集的正确率为{}%".format((predictions == y).mean() * 100.0))
+
 	# 加载测试集
 	mat = scipy.io.loadmat("spamTest.mat")
 	X_test, y_test = mat['Xtest'], mat['ytest']
 	# 预测并计算测试集正确率
 	predictions = linear_svm.predict(X_test)
 	predictions = predictions.reshape(np.shape(predictions)[0], 1)
-	print('{}%'.format((predictions == y_test).mean() * 100.0))
+	print('C=0.1的线性核SVM训练后对于测试集的正确率为{}%'.format((predictions == y_test).mean() * 100.0))
 
+	# -----------------------------------
 	vocab_list = vocaburary_mapping()
 	reversed_vocab_list = dict((v, k) for (k, v) in vocab_list.items())
 	sorted_indices = np.argsort(linear_svm.coef_, axis=None)
