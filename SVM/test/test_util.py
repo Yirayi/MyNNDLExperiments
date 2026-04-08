@@ -1,4 +1,4 @@
-from util import Util
+from ..util import Util
 import unittest
 class TestUtil(unittest.TestCase):
     def setUp(self):

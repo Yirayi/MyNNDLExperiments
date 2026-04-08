@@ -2,7 +2,7 @@ import scipy.io
 import numpy as np
 
 for i in range(1,4):
-    datastr = 'dataset_'+str(i)+'.mat'
+    datastr = '../datasetSVM/dataset_'+str(i)+'.mat'
     print(datastr)
     data = scipy.io.loadmat(datastr)
     print(data.keys())
