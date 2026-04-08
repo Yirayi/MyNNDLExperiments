@@ -43,21 +43,22 @@ def visualize_boundary(X, trained_svm):
 def gaussian_kernel(x1, x2, gamma):
 	return np.exp(-gamma * np.sum((x1 - x2) ** 2))
 
-def dataset3_params_ver3(X, y, X_val, y_val):
-	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+def dataset3_params_ver3(X, y, X_val, y_val) -> dict:
+	c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 	gamma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 
-	raveled_y = y.ravel()
+	X_all = np.vstack([X, X_val])
+	y_all = np.concatenate([y.ravel(), y_val.ravel()])
 
 	rbf_svm = svm.SVC()
-	parameters = {'kernel': ('rbf',), 'C': np.c_values, 'gamma': gamma_values}
+	parameters = {'kernel': ('rbf',), 'C': c_values, 'gamma': gamma_values}
 	grid = model_selection.GridSearchCV(rbf_svm, parameters)
-	best = grid.fit(X, raveled_y).best_params_
+	best = grid.fit(X_all, y_all).best_params_
 
 	return best
 
 def dataset2_params_ver2(X, y, X_val, y_val):
-	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+	c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 	gamma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 
 	raveled_y = y.ravel()  # Else the SVM will give you annoying warning
@@ -67,7 +68,7 @@ def dataset2_params_ver2(X, y, X_val, y_val):
 
 	best = {'score': -999, 'C': 0.0, 'gamma': 0.0}
 
-	for C in np.c_values:
+	for C in c_values:
 		for gamma in gamma_values:
 			# train the SVM first
 			rbf_svm.set_params(C=C, gamma=gamma)
@@ -84,7 +85,7 @@ def dataset2_params_ver2(X, y, X_val, y_val):
 	return best
 
 def params_search(X, y, X_val, y_val):
-	np.c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+	c_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 	gamma_values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 
 	raveled_y = y.ravel()
@@ -94,7 +95,7 @@ def params_search(X, y, X_val, y_val):
 
 	best = {'error': 999, 'C': 0.0, 'gamma': 0.0}
 
-	for C in np.c_values:
+	for C in c_values:
 		for gamma in gamma_values:
 			# train the SVM first
 			rbf_svm.set_params(C=C, gamma=gamma)
@@ -194,10 +195,6 @@ def part3():
 	mat = scipy.io.loadmat("dataset_3.mat")
 	X, y = mat['X'], mat['y']#X.shape=(211, 2) y.shape=(211, 1)
 	X_val, y_val = mat['Xval'], mat['yval']#X.shape=(200, 2) y.shape=(200, 1)
-	print(X.shape)
-	print(y.shape)
-	print(X_val.shape)
-	print(y_val.shape)
 	fig, axes = plt.subplots(
 		1, 2,
 		figsize=(16, 8),  # 整体画布大小
@@ -219,9 +216,11 @@ def part3():
 	plt.close()
 
 	# 训练高斯核函数SVM并搜索使用最优模型参数
-	rbf_svm = svm.SVC(kernel='rbf')
+	#rbf_svm = svm.SVC(kernel='rbf')
 	# your code here
-	
+	best = dataset3_params_ver3(X, y, X_val, y_val)
+	rbf_svm = svm.SVC(**best)
+
 	# 绘制决策边界
 	plt.title('参数搜索后的决策边界')
 	plot(np.c_[X, y])
@@ -236,9 +235,6 @@ def part3():
 	# visualize_boundary(X, rbf_svm)
 	# plt.show(block=True)
 
-	# best = dataset3_params_ver3(X, y, X_val, y_val)
-	# rbf_svm.set_params(C=best['C'])
-	# rbf_svm.set_params(gamma=best['gamma'])
 
 	# plot(np.c_[X, y])
 	# visualize_boundary(X, rbf_svm)
