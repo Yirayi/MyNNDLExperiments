@@ -120,7 +120,7 @@ def params_search(X, y, X_val, y_val):
 def part1():
 	# --------------- 步骤1 ------------------
 	# 加载数据集1
-	mat = scipy.io.loadmat("dataset_1.mat")
+	mat = scipy.io.loadmat("datasetSVM/dataset_1.mat")
 	X, y = mat['X'], mat['y']#X.shape=(51, 2) y.shape=(51, 1)
 
 	# 绘制数据集1
@@ -164,7 +164,7 @@ def part2():
 
 	# --------------- 步骤2 ------------------
 	# 加载数据集2
-	mat = scipy.io.loadmat("dataset_2.mat")
+	mat = scipy.io.loadmat("datasetSVM/dataset_2.mat")
 	X, y = mat['X'], mat['y']#X.shape=(863, 2) y.shape=(863, 1)
 	# 绘制数据集2
 	plt.title('数据集2分布')
@@ -189,7 +189,7 @@ def part2():
 def part3():
 	# --------------- 步骤1 ------------------
 	# 加载数据集3和验证集
-	mat = scipy.io.loadmat("dataset_3.mat")
+	mat = scipy.io.loadmat("datasetSVM/dataset_3.mat")
 	X, y = mat['X'], mat['y']#X.shape=(211, 2) y.shape=(211, 1)
 	X_val, y_val = mat['Xval'], mat['yval']#X.shape=(200, 2) y.shape=(200, 1)
 	fig, axes = plt.subplots(
@@ -249,22 +249,6 @@ def part3():
 				+'_'.join(f"{k}={v}" for k, v in best_para.items())
 				+'.png')
 	plt.close()
-
-
-
-
-# best = dataset2_params_ver2(X, y, X_val, y_val)
-	# rbf_svm.set_params(C=best['C'])
-	# rbf_svm.set_params(gamma=best['gamma'])
-
-	# plot(np.c_[X, y])
-	# visualize_boundary(X, rbf_svm)
-	# plt.show(block=True)
-
-
-	# plot(np.c_[X, y])
-	# visualize_boundary(X, rbf_svm)
-	# plt.show(block=True)
 
 
 def main():
