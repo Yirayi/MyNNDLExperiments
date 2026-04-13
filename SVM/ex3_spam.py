@@ -24,7 +24,12 @@ def vocaburary_mapping()->dict[str,int]:
 			
 	return vocab_list
 
-def feature_extraction(word_indices):
+def feature_extraction(word_indices)->np.ndarray:
+	'''
+
+		Returns:
+			np.ndarray:邮件中存在的单词置位1
+	'''
 	features = np.zeros((1899, 1))
 	for index in word_indices:
 		features[index] = 1
@@ -76,7 +81,6 @@ def part_3():
 	#加载训练集
 	mat = scipy.io.loadmat("spamTrain.mat")
 	X, y = mat['X'], mat['y']
-
 	# linear_svm = pickle.load(open("linear_svm.svm", "rb")) # 模型加载
 	#训练SVM
 	if isTrainMode:
@@ -92,6 +96,7 @@ def part_3():
 	predictions = linear_svm.predict(X)#X.shape=(4000, 1899) predictions.shape=(4000,)
 	predictions = predictions.reshape(-1, 1)#predictions.shape=(4000,1)
 	print("C=0.1的线性核SVM训练后对于训练集的正确率为{}%".format((predictions == y).mean() * 100.0))
+	print("C=0.1的线性核SVM训练后对于训练集的得分为{}".format(linear_svm.score(X, y)))
 
 	# 加载测试集
 	mat = scipy.io.loadmat("spamTest.mat")
@@ -100,20 +105,25 @@ def part_3():
 	predictions = linear_svm.predict(X_test)
 	predictions = predictions.reshape(np.shape(predictions)[0], 1)
 	print('C=0.1的线性核SVM训练后对于测试集的正确率为{}%'.format((predictions == y_test).mean() * 100.0))
+	print("C=0.1的线性核SVM训练后对于测试集的得分为{}".format(linear_svm.score(X_test, y_test)))
 
 	# -----------------------------------
 	vocab_list = vocaburary_mapping()
 	reversed_vocab_list = dict((v, k) for (k, v) in vocab_list.items())
 	sorted_indices = np.argsort(linear_svm.coef_, axis=None)
 
+	print("=== 垃圾邮件特征词 ===")
 	for i in sorted_indices[0:15]:
-		print(reversed_vocab_list[i])
+		print('{0}:{1}'.format(reversed_vocab_list[i],linear_svm.coef_[0][i]))
+	print("=== 普通邮件特征词 ===")
+	for i in sorted_indices[-15:]:
+		print('{0}:{1}'.format(reversed_vocab_list[i], linear_svm.coef_[0][i]))
 
 
 def part_4():
 	print("=" * 27 + "part4" + "=" * 27)
 	# your code here
-	pass
+
 
 if __name__ == '__main__':
 	part_1()
