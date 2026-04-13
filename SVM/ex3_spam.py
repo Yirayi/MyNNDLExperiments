@@ -112,12 +112,40 @@ def part_3():
 	reversed_vocab_list = dict((v, k) for (k, v) in vocab_list.items())
 	sorted_indices = np.argsort(linear_svm.coef_, axis=None)
 
-	print("=== 垃圾邮件特征词 ===")
+	print("=== 普通邮件特征词 ===")
 	for i in sorted_indices[0:15]:
 		print('{0}:{1}'.format(reversed_vocab_list[i],linear_svm.coef_[0][i]))
-	print("=== 普通邮件特征词 ===")
+	print("=== 垃圾邮件特征词 ===")
 	for i in sorted_indices[-15:]:
 		print('{0}:{1}'.format(reversed_vocab_list[i], linear_svm.coef_[0][i]))
+
+	# 验证：统计特征词在 spam/ham 中的出现频率
+def SpamVerify():
+	mat = scipy.io.loadmat("spamTrain.mat")
+	X, y = mat['X'], mat['y']
+	spam_mask = (y.ravel() == 1)
+	ham_mask = (y.ravel() == 0)
+	n_spam = spam_mask.sum()
+	n_ham = ham_mask.sum()
+	with open("linear_svm.svm", "rb") as f:
+		linear_svm = pickle.load(f)
+	# -----------------------------------
+	vocab_list = vocaburary_mapping()
+	reversed_vocab_list = dict((v, k) for (k, v) in vocab_list.items())
+	sorted_indices = np.argsort(linear_svm.coef_, axis=None)
+
+	print(f"\n{'词':<12} {'spam出现率':>10} {'ham出现率':>10} {'spam/ham比':>10}")
+	print("-" * 45)
+
+	# 取权重最大的5个词和最小的5个词
+	check_indices = list(sorted_indices[-5:]) + list(sorted_indices[:5])
+	for i in check_indices:
+		word = reversed_vocab_list[i]
+		weight = linear_svm.coef_[0, i]
+		spam_rate = X[spam_mask, i].sum() / n_spam
+		ham_rate = X[ham_mask, i].sum() / n_ham
+		ratio = spam_rate / ham_rate if ham_rate > 0 else float('inf')
+		print(f"{word:<12} {spam_rate:>10.3f} {ham_rate:>10.3f} {ratio:>10.2f}x  (w={weight:.3f})")
 
 
 def part_4():
@@ -129,5 +157,6 @@ if __name__ == '__main__':
 	part_1()
 	part_2()
 	part_3()
+	SpamVerify()
 	part_4()
 # print(vocaburary_mapping())
