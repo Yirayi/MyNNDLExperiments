@@ -96,7 +96,7 @@ def part_3():
 	predictions = linear_svm.predict(X)#X.shape=(4000, 1899) predictions.shape=(4000,)
 	predictions = predictions.reshape(-1, 1)#predictions.shape=(4000,1)
 	print("C=0.1的线性核SVM训练后对于训练集的正确率为{}%".format((predictions == y).mean() * 100.0))
-	print("C=0.1的线性核SVM训练后对于训练集的得分为{}".format(linear_svm.score(X, y)))
+	#print("C=0.1的线性核SVM训练后对于训练集的得分为{}".format(linear_svm.score(X, y)))
 
 	# 加载测试集
 	mat = scipy.io.loadmat("spamTest.mat")
@@ -105,7 +105,7 @@ def part_3():
 	predictions = linear_svm.predict(X_test)
 	predictions = predictions.reshape(np.shape(predictions)[0], 1)
 	print('C=0.1的线性核SVM训练后对于测试集的正确率为{}%'.format((predictions == y_test).mean() * 100.0))
-	print("C=0.1的线性核SVM训练后对于测试集的得分为{}".format(linear_svm.score(X_test, y_test)))
+	#print("C=0.1的线性核SVM训练后对于测试集的得分为{}".format(linear_svm.score(X_test, y_test)))
 
 	# -----------------------------------
 	vocab_list = vocaburary_mapping()
