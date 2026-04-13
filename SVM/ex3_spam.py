@@ -17,7 +17,7 @@ def vocaburary_mapping()->dict[str,int]:
 		dict[str,int]:单词对应编号
 	'''
 	vocab_list = {}
-	with open('vocab.txt', 'r') as file:
+	with open('EmailSample/vocab.txt', 'r') as file:
 		reader = csv.reader(file, delimiter='\t')
 		for row in reader:
 			vocab_list[row[1]] = int(row[0])
@@ -65,14 +65,14 @@ def email_preprocess(email):
 # 预处理
 def part_1():
 	print("=" *  27+"part1"+"=" * 27)
-	word_indices, processed_contents = email_preprocess('emailSample1.txt')
+	word_indices, processed_contents = email_preprocess('EmailSample/emailSample1.txt')
 	print(word_indices)
 	print(processed_contents)
 
 # 特征提取
 def part_2():
 	print("=" *  27+"part2"+"=" * 27)
-	word_indices, processed_contents = email_preprocess('emailSample1.txt')
+	word_indices, processed_contents = email_preprocess('EmailSample/emailSample1.txt')
 	features = feature_extraction(word_indices)#features.shape = (1899,1)
 
 # SVM模型训练
@@ -152,7 +152,8 @@ def part_4():
 	print("=" * 27 + "part4" + "=" * 27)
 	with open("linear_svm.svm", "rb") as f:
 		linear_svm = pickle.load(f)
-	for filename in ['hamTest.txt','spamTest.txt','spamSample1.txt', 'spamSample2.txt']:
+	for filename in ['hamTest.txt','spamTest.txt','emailSample1.txt','emailSample2.txt','spamSample1.txt', 'spamSample2.txt']:
+		filename='EmailSample/'+filename
 		word_indices, _ = email_preprocess(filename)
 		features = feature_extraction(word_indices).T  # (1, 1899)
 		prediction = linear_svm.predict(features)[0]
@@ -166,4 +167,4 @@ if __name__ == '__main__':
 	part_3()
 	SpamVerify()
 	part_4()
-# print(vocaburary_mapping())
+
