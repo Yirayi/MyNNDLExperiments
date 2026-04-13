@@ -150,7 +150,14 @@ def SpamVerify():
 
 def part_4():
 	print("=" * 27 + "part4" + "=" * 27)
-	# your code here
+	with open("linear_svm.svm", "rb") as f:
+		linear_svm = pickle.load(f)
+	for filename in ['spamSample1.txt', 'spamSample2.txt']:
+		word_indices, _ = email_preprocess(filename)
+		features = feature_extraction(word_indices).T  # (1, 1899)
+		prediction = linear_svm.predict(features)[0]
+		label = '垃圾邮件' if prediction == 1 else '普通邮件'
+		print(f'{filename}: {label}')
 
 
 if __name__ == '__main__':
